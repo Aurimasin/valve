@@ -49,7 +49,7 @@ const stopValve = () => {
 const controlValve = (startTime) => {
   const now = new Date();
   const RPS = interval / (now.getTime() - startTime.getTime());
-  console.log('RPS', RPS, valveRunning || !initialised || (now.getTime() - runValveEnd.getTime() < waitTime));
+  console.log('RPS', RPS);
   getSocket().send(RPS);
   if (valveRunning || !initialised || (now.getTime() - runValveEnd.getTime() < waitTime)) {
     return false;

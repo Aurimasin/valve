@@ -1,0 +1,15 @@
+{
+  "name": "valve",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "onoff": "^3.2.2"
+  }
+}

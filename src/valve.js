@@ -3,13 +3,13 @@ const onoff = require('onoff');
 const { getSocket } = require('./socket');
 
 const { Gpio } = onoff;
-const initValve = 26;
-const exitValve = 19;
+const valveStart = 26;
+const valveStop = 19;
 const valveOpen = 5;
 const valveClose = 6;
 
-const initValveInput = new Gpio(initValve, 'in', 'both', { debounceTimeout: 1 });
-const exitValveInput = new Gpio(exitValve, 'in', 'both', { debounceTimeout: 1 });
+const startValveInput = new Gpio(valveStart, 'in', 'both', { debounceTimeout: 1 });
+const stopValveInput = new Gpio(valveStop, 'in', 'both', { debounceTimeout: 1 });
 const valveOpenOutput = new Gpio(valveOpen, 'out', 'none', { activeLow: true });
 const valveCloseOutput = new Gpio(valveClose, 'out', 'none', { activeLow: true });
 valveOpenOutput.writeSync(Gpio.LOW);
@@ -63,7 +63,7 @@ const controlValve = (startTime) => {
 };
 
 const init = () => {
-  initValveInput.watch((err, value) => {
+  startValveInput.watch((err, value) => {
     if (err) {
       throw err;
     }
@@ -74,7 +74,7 @@ const init = () => {
     }
   });
 
-  exitValveInput.watch((err, value) => {
+  stopValveInput.watch((err, value) => {
     if (err) {
       throw err;
     }

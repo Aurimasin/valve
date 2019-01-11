@@ -21,7 +21,7 @@ const init = () => {
     startTime = startTime || new Date();
     if (value && !on) {
       on = true;
-      controlValve(startTime);
+      controlValve( startTime);
       startTime = new Date();
     }
     if (!value && on) {

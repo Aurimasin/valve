@@ -1,13 +1,15 @@
 const onoff = require('onoff');
 
+const { getSocket } = require('./socket');
+
 const { Gpio } = onoff;
-const valveStart = 26;
-const valveStop = 19;
+const initValve = 26;
+const exitValve = 19;
 const valveOpen = 5;
 const valveClose = 6;
 
-const startValveInput = new Gpio(valveStart, 'in', 'both', { debounceTimeout: 1 });
-const stopValveInput = new Gpio(valveStop, 'in', 'both', { debounceTimeout: 1 });
+const initValveInput = new Gpio(initValve, 'in', 'both', { debounceTimeout: 1 });
+const exitValveInput = new Gpio(exitValve, 'in', 'both', { debounceTimeout: 1 });
 const valveOpenOutput = new Gpio(valveOpen, 'out', 'none', { activeLow: true });
 const valveCloseOutput = new Gpio(valveClose, 'out', 'none', { activeLow: true });
 valveOpenOutput.writeSync(Gpio.LOW);
@@ -48,19 +50,20 @@ const controlValve = (startTime) => {
   const now = new Date();
   const RPS = interval / (now.getTime() - startTime.getTime());
   console.log('RPS', RPS, valveRunning || !initialised || (now.getTime() - runValveEnd.getTime() < waitTime));
+  getSocket().send(RPS);
   if (valveRunning || !initialised || (now.getTime() - runValveEnd.getTime() < waitTime)) {
     return false;
   }
 
   if (RPS >= RPS_MAX) {
-    runValve(true);
+    runValve();
   } else if (RPS <= RPS_MIN) {
     runValve(false);
   }
 };
 
 const init = () => {
-  startValveInput.watch((err, value) => {
+  initValveInput.watch((err, value) => {
     if (err) {
       throw err;
     }
@@ -71,7 +74,7 @@ const init = () => {
     }
   });
 
-  stopValveInput.watch((err, value) => {
+  exitValveInput.watch((err, value) => {
     if (err) {
       throw err;
     }
@@ -89,4 +92,4 @@ process.on('SIGINT', () => {
   valveCloseOutput.unexport();
 });
 
-module.exports = { init, controlValve};
+module.exports = { init, controlValve };

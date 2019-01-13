@@ -46,9 +46,38 @@ const stopValve = () => {
   runValve(false, 10000);
 };
 
+const toleranceDepth = 10;
+const toleranceLength = 5;
+let lastValue = null;
+let invalidValues = [];
+
+const getValueWithTolerance = (RPS) => {
+  if (lastValue === null) {
+    lastValue = RPS;
+    return RPS;
+  }
+
+  const lambda = Math.abs(RPS - lastValue);
+  if (lastValue / lambda < toleranceDepth) {
+    invalidValues.push(RPS);
+    if (invalidValues.length >= toleranceLength) {
+      lastValue = RPS;
+      invalidValues = [];
+    } else {
+      return lastValue;
+    }
+  } else {
+    lastValue = RPS;
+    invalidValues = [];
+  }
+
+  return RPS;
+};
+
 const controlValve = (startTime) => {
   const now = new Date();
-  const RPS = interval / (now.getTime() - startTime.getTime());
+  let RPS = interval / (now.getTime() - startTime.getTime());
+  RPS = getValueWithTolerance(RPS);
   console.log('RPS', RPS);
   getSocket().send(RPS);
   if (valveRunning || !initialised || (now.getTime() - runValveEnd.getTime() < waitTime)) {

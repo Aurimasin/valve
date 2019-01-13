@@ -3,3 +3,5 @@
 .gitignore
 node_modules
 logs
+
+#rsync -avz --progress --exclude-from='.rsync-exclude' * pi@192.168.0.25:~/projs/valve
